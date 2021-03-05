@@ -11,6 +11,12 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 from SVM import SVM
 
+from sklearn import svm
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+
 dataset = r"C:\Users\Mubtasim\Desktop\Capstone\Lyme Data.xlsx"
 excel = pd.read_excel(dataset)
     #import data into array
@@ -25,11 +31,38 @@ print("\n")
 X = data.to_numpy()
 variable_names = list(data.columns.values)
 print (variable_names)
-
 y = variable_names
 
-X, y =  data.make_blobs(n_samples=450, n_features=2, centers=2, cluster_std=1.05)
-y = np.where(y == 0, -1, 1)
+
+
+#THIS IS THE PART I CAN'T FIGURE OUT
+
+X_train = pd.read_excel(dataset, na_values=['NA'], skiprows = [0], usecols = "D, E, F, G, H, I, J, K, L, M, N, O")
+print (X_train)
+
+X_test = pd.read_excel(dataset, na_values=['NA'], skiprows = [0], usecols = "P, Q, R")
+X_predictions = pd.read_excel(dataset, na_values=['NA'], skiprows = [0], usecols = "P, Q, R")
+clf = svm.SVC()
+clf.fit(X_train, X_test)
+print ("SVM")
+print (clf.predict(X_predictions))
+
+
+
+
+
+
+
+
+#X, y =  data(random_state = 0)
+#y = np.where(y == 0, -1, 1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+pipe = Pipeline([('scaler', StandardScaler()), ('svc', SVC())])
+# The pipeline can be used as any other estimator
+# and avoids leaking the test set into the train set
+pipe.fit(X_train, y_train)
+Pipeline(steps=[('scaler', StandardScaler()), ('svc', SVC())])
+pipe.score(X_test, y_test)
 
 clf = SVM()
 clf.fit(X, y)
